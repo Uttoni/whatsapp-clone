@@ -68,3 +68,17 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+### To create project
+`npx creat-react-app whatsapp-clone`
+
+### Install firebase
+`npm install firebase`
+
+### Install material-ui to use the icons
+`npm install @material-ui/core @material-ui/icons`
+
+### Install picker to use emojis
+`npm install emoji-picker-react`
