@@ -48,23 +48,55 @@
 }
 
 .chatWindow-body{
-    display: flex;
+    flex: 1;
     overflow-y: auto;
     background-color: #e5ddd5;
     background-size: cover;
     background-position: center;
-    background-image: url('../../public/images/fundo_conversa.png');
+    background-image: url("../../../public/images/fundo_conversa.png");
 }
 
+.chatWindow-footer{
+    display: flex;
+    align-items: center;
+    height: 62px;
+}
 
+.chatWindow-footer-left{
+    display: flex;
+    margin: 0 15px;
+}
 
+.chatWindow-footer-input-area{
+    flex: 1;
+}
 
+.chatWindow-footer-input{
+    height: 40px;
+    width: 100%;
+    border-radius: 20px;
+    background-color: #fff;
+    font-size: 15px;
+    border: 0;
+    outline: 0;
+    color: #4a4a4a;
+    padding-left: 15px;
+}
 
+.chatWindow-footer-right{
+    display: flex;
 
+    margin: 0 15px;
+}
 
+aside.emoji-picker-react{
+    width: auto;
+    overflow-y: hidden;
+}
 
-
-
+aside.emoji-picker-react .content-wrapper:before{
+    background: none;
+}
 
 
 

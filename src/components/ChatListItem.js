@@ -1,5 +1,5 @@
 import React from 'react';
-import './ChatListItem.css';
+import './styles/ChatListItem.css';
 
 export default ({onClick, active, data}) => {
 

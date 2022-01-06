@@ -6,7 +6,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import SearchIcon from '@mui/icons-material/Search';
 import ChatListItem from './components/ChatListItem.js';
 import ChatIntro from './components/ChatIntro.js';
-import ChatWindow from './components/ChatWindow.js'
+import ChatWindow from './components/ChatWindow.js';
 
 export default () => {
 
