@@ -16,7 +16,16 @@ const ChatWindow = () => {
     const [emojiOpen, setEmojiOpen] = useState(false);
 
     const handleEmojiClick = () => {
+        console.log('clicou');
+    }
 
+    const handleOpenEmoji = () => {
+        setEmojiOpen(true);
+        console.log(emojiOpen);
+    }
+
+    const handleCloseEmoji = () => {
+        setEmojiOpen(false);
     }
 
     return(
@@ -44,18 +53,25 @@ const ChatWindow = () => {
 
             <div className="chatWindow-emoji-area">
                 <EmojiPicker 
-                    style={{height: emojiOpen ? '0px':'200px' }}
+                    style={{height: emojiOpen ? '50px':'_0px' }}
                     disableSearchBar
+                    disableSkinTonePicker
                     onEmojiClick={handleEmojiClick}
                 />
             </div>
 
             <div className="chatWindow-footer">
                 <div className="chatWindow-footer-left">
-                    <div className="chatWindow-header-icon">
+                    <div
+                        className="chatWindow-header-icon"
+                        onClick={handleCloseEmoji}
+                    >
                         <CloseIcon style={{color: '#919191'}}/>
                     </div>
-                    <div className="chatWindow-header-icon">
+                    <div 
+                        className="chatWindow-header-icon"
+                        onClick={handleOpenEmoji}
+                    >
                         <InsertEmoticonIcon style={{color: '#919191'}}/>
                     </div>
                     <div className="chatWindow-header-icon">
