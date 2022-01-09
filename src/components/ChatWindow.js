@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import EmojiPicker from 'emoji-picker-react';
 
+import MessageItem from './MessageItem';
 import './styles/ChatWindow.css';
 
 import SearchIcon from '@mui/icons-material/Search';
@@ -11,21 +12,76 @@ import SendIcon from '@mui/icons-material/Send';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 import CloseIcon from '@mui/icons-material/Close';
 
-const ChatWindow = () => {
+const ChatWindow = ({user}) => {
+
+    const body = useRef();
+
+    let recognition = null;
+    let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(SpeechRecognition !== undefined){
+        recognition = new SpeechRecognition();
+    }
 
     const [emojiOpen, setEmojiOpen] = useState(false);
+    const [text, setText] = useState('');
+    const [listening, setListening] = useState(false);
+    const [messageList, setMessageList] = useState([
+        {author:123, date:'19:00', body: "testeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"},
+        {author:123, date:'19:01', body: "estranho"},
+        {author:1234, date:'19:01', body: 'ta funcionandooooooo :3'},
+        { author: 123, date: '19:00', body: "testeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" },
+        { author: 123, date: '19:01', body: "estranho" },
+        { author: 1234, date: '19:01', body: 'ta funcionandooooooo :3' },
+        { author: 123, date: '19:00', body: "testeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" },
+        { author: 123, date: '19:01', body: "estranho" },
+        { author: 1234, date: '19:01', body: 'ta funcionandooooooo :3' },
+        { author: 123, date: '19:00', body: "testeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" },
+        { author: 123, date: '19:01', body: "estranho" },
+        { author: 1234, date: '19:01', body: 'ta funcionandooooooo :3' }, { author: 123, date: '19:00', body: "testeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" },
+        { author: 123, date: '19:01', body: "estranho" },
+        { author: 1234, date: '19:01', body: 'ta funcionandooooooo :3' }
+    ]);
 
-    const handleEmojiClick = () => {
-        console.log('clicou');
+
+    useEffect(() => {
+        if(body.current.scrollHeight > body.current.offsetHeight){
+            body.current.scrollTop = body.current.scrollHeight - body.current.offsetHeight
+        }
+    },[messageList]);
+
+    const handleEmojiClick = (e, emojiObject) => {
+        setText(text + emojiObject.emoji)
     }
 
     const handleOpenEmoji = () => {
         setEmojiOpen(true);
-        console.log(emojiOpen);
     }
 
     const handleCloseEmoji = () => {
         setEmojiOpen(false);
+    }
+
+    const handleSendClick = () => {
+
+    }
+
+    const handleMicClick = () => {
+        if( recognition !== null){
+            recognition.onstart = () => {
+                setListening(true);
+            }
+
+            recognition.onend = () => {
+                setListening(false);
+            }
+            
+            recognition.onresult = (e) => {
+                setText(e.results[0][0].transcript)
+            }
+
+            recognition.start();
+
+        }
     }
 
     return(
@@ -47,13 +103,22 @@ const ChatWindow = () => {
                     </div>
                 </div>
             </div>
-            <div className="chatWindow-body">
-
+            <div ref={body} className="chatWindow-body">
+                {
+                    messageList.map((item, key) => (
+                        <MessageItem
+                            key={key}
+                            data={item}
+                            user={user}
+                        />
+                    ))
+                }
             </div>
 
-            <div className="chatWindow-emoji-area">
-                <EmojiPicker 
-                    style={{height: emojiOpen ? '50px':'_0px' }}
+            <div className="chatWindow-emoji-area"
+                style={{height: emojiOpen ? '200px':'0px'}}
+            >
+                <EmojiPicker
                     disableSearchBar
                     disableSkinTonePicker
                     onEmojiClick={handleEmojiClick}
@@ -65,29 +130,46 @@ const ChatWindow = () => {
                     <div
                         className="chatWindow-header-icon"
                         onClick={handleCloseEmoji}
+                        style={{ width: emojiOpen ? '40px' : '0' }}
                     >
-                        <CloseIcon style={{color: '#919191'}}/>
+                        <CloseIcon style={{ color: '#919191', width: emojiOpen ? '40px' : '0'}}/>
                     </div>
                     <div 
                         className="chatWindow-header-icon"
                         onClick={handleOpenEmoji}
                     >
-                        <InsertEmoticonIcon style={{color: '#919191'}}/>
+                        <InsertEmoticonIcon style={{color: emojiOpen? '#009688':'#919191'}}/>
                     </div>
                     <div className="chatWindow-header-icon">
                         <AttachFileIcon style={{color: '#919191'}}/>
                     </div>
                 </div>
                 <div className="chatWindow-footer-input-area">
-                    <input className="chatWindow-footer-input" type="text" placeholder="Type a message"/>
+                    <input 
+                        className="chatWindow-footer-input" 
+                        type="text" 
+                        placeholder="Type a message"
+                        value={text}
+                        onChange={e => setText(e.target.value)}
+                    />
                 </div>
                 <div className="chatWindow-footer-right">
-                    <div className="chatWindow-header-icon">
-                        <MicIcon style={{color: '#919191'}}/>
-                    </div>
-                    <div className="chatWindow-header-icon">
-                        <SendIcon style={{color: '#919191'}}/>
-                    </div>
+                    { text === '' &&
+                        <div 
+                            className="chatWindow-header-icon"
+                            onClick={handleMicClick}
+                        >
+                            <MicIcon style={{ color: listening ? '#126ece' : '#919191' }}/>
+                        </div>
+                    }
+                    {text !== '' &&
+                        <div 
+                            className="chatWindow-header-icon"
+                            onClick={handleSendClick}
+                        >
+                            <SendIcon style={{color: '#919191'}}/>
+                        </div>
+                    }
                 </div>
             </div>
         </div>

@@ -45,6 +45,8 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    overflow: hidden;
+    transition: all ease 0.3s;
 }
 
 .chatWindow-body{
@@ -52,8 +54,17 @@
     overflow-y: auto;
     background-color: #e5ddd5;
     background-size: cover;
-    background-position: center;
     background-image: url("../../../public/images/fundo_conversa.png");
+    padding: 20px 30px;
+}
+
+.chatWindow-body::-webkit-scrollbar{
+  width: 6px;
+  height: 6px;
+}
+
+.chatWindow-body::-webkit-scrollbar-thumb{
+  background-color: #bbb
 }
 
 .chatWindow-footer{
@@ -85,8 +96,12 @@
 
 .chatWindow-footer-right{
     display: flex;
-
     margin: 0 15px;
+}
+
+.chatWindow-emoji-area{
+    overflow-y: hidden;
+    transition: all ease 0.3s;
 }
 
 aside.emoji-picker-react{
@@ -97,13 +112,3 @@ aside.emoji-picker-react{
 aside.emoji-picker-react .content-wrapper:before{
     background: none;
 }
-
-
-
-
-
-
-
-
-
-
