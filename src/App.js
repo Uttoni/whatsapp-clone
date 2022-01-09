@@ -7,28 +7,47 @@ import SearchIcon from '@mui/icons-material/Search';
 import ChatListItem from './components/ChatListItem.js';
 import ChatIntro from './components/ChatIntro.js';
 import ChatWindow from './components/ChatWindow.js';
+import NewChat from './components/NewChat';
 
-export default () => {
+const App = () => {
 
   const [chatList, setChatList] = useState([
     {chatId: 1, name: 'Nome da Pessoa 1', avatar: 'https://fiverr-res.cloudinary.com/images/t_main1,q_auto,f_auto,q_auto,f_auto/gigs/104113705/original/6076831db34315e45bd2a31a9d79bb7b91d48e04/design-flat-style-minimalist-avatar-of-you.jpg'},
     {chatId: 2, name: 'Nome da Pessoa 2', avatar: 'https://fiverr-res.cloudinary.com/images/t_main1,q_auto,f_auto,q_auto,f_auto/gigs/104113705/original/6076831db34315e45bd2a31a9d79bb7b91d48e04/design-flat-style-minimalist-avatar-of-you.jpg'},
     {chatId: 3, name: 'Nome da Pessoa 3', avatar: 'https://fiverr-res.cloudinary.com/images/t_main1,q_auto,f_auto,q_auto,f_auto/gigs/104113705/original/6076831db34315e45bd2a31a9d79bb7b91d48e04/design-flat-style-minimalist-avatar-of-you.jpg'},
-
   ]);
-  
-  const [activeChat, setActiveChat] = useState({});
 
+  const [user, setUser] = useState({
+    id: 1234,
+    name: "Uttoni",
+    avatar: "https://fiverr-res.cloudinary.com/images/t_main1,q_auto,f_auto,q_auto,f_auto/gigs/104113705/original/6076831db34315e45bd2a31a9d79bb7b91d48e04/design-flat-style-minimalist-avatar-of-you.jpg"
+  }); 
+
+  const [activeChat, setActiveChat] = useState({});
+  const [showNewChat, setShowNewChat] = useState(false);
+
+  const handleNewChat = () => {
+    setShowNewChat(true);
+  }
   return(
     <div className='app-window'>
       <div className='sidebar'>
+        <NewChat 
+          show={showNewChat}
+          setShow={setShowNewChat}
+          user={user}
+          chatList={chatList}
+        />
         <header>
-          <img className='header-avatar' src="https://fiverr-res.cloudinary.com/images/t_main1,q_auto,f_auto,q_auto,f_auto/gigs/104113705/original/6076831db34315e45bd2a31a9d79bb7b91d48e04/design-flat-style-minimalist-avatar-of-you.jpg" alt=""/>
+          <img className='header-avatar' src={user.avatar} alt=""/>
           <div className='header-buttons'>
             <div className='header-btn'>
               <DonutLargeIcon style={{color: '#919191'}}/>
             </div>
-            <div className='header-btn'>
+            <div
+              className='header-btn'
+              onClick={handleNewChat}
+            >
               <ChatIcon style={{color: '#919191'}}/>
             </div>
             <div className='header-btn'>
@@ -60,7 +79,7 @@ export default () => {
       </div>
       <div className='content-area'>
         { activeChat.chatId !== undefined &&
-          <ChatWindow />
+          <ChatWindow user={user}/>
         }
 
         {activeChat.chatId === undefined &&
@@ -71,3 +90,5 @@ export default () => {
     </div>
   )
 };
+
+export default App;
