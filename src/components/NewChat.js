@@ -1,20 +1,32 @@
-import React, { useState } from 'react';
 import './styles/NewChat.css';
-
+import React, { useState, useEffect } from 'react';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { getAllContacts, addChat } from '../Api';
 
 const NewChat = ({user, chatList, show, setShow}) => {
 
-    const [contactList, setContactList] = useState([
-        { id: 123, avatar: 'https://fiverr-res.cloudinary.com/images/t_main1,q_auto,f_auto,q_auto,f_auto/gigs/104113705/original/6076831db34315e45bd2a31a9d79bb7b91d48e04/design-flat-style-minimalist-avatar-of-you.jpg', name:'Breno'},
-        { id: 123, avatar: 'https://fiverr-res.cloudinary.com/images/t_main1,q_auto,f_auto,q_auto,f_auto/gigs/104113705/original/6076831db34315e45bd2a31a9d79bb7b91d48e04/design-flat-style-minimalist-avatar-of-you.jpg', name: 'Diego' },
-        { id: 123, avatar: 'https://fiverr-res.cloudinary.com/images/t_main1,q_auto,f_auto,q_auto,f_auto/gigs/104113705/original/6076831db34315e45bd2a31a9d79bb7b91d48e04/design-flat-style-minimalist-avatar-of-you.jpg', name: 'Vinícius' },
-        { id: 123, avatar: 'https://fiverr-res.cloudinary.com/images/t_main1,q_auto,f_auto,q_auto,f_auto/gigs/104113705/original/6076831db34315e45bd2a31a9d79bb7b91d48e04/design-flat-style-minimalist-avatar-of-you.jpg', name: 'Taty' }
-    ]);
+    const [contactList, setContactList] = useState([]);
+
+    useEffect(()=>{
+        const getList = async () => {
+            if(user !== null){
+                let results = await getAllContacts(user.id);
+                setContactList(results);
+            }
+        };
+
+        getList();
+    }, [user]);
+
+    const addNewChat = async (friend) =>{
+        await addChat(user, friend);
+
+        handleClose();
+    };
 
     const handleClose = () => { 
         setShow(false);
-    }
+    };
 
     return(
         <div 
@@ -33,7 +45,7 @@ const NewChat = ({user, chatList, show, setShow}) => {
             <div className='newChat-list'>
                 {
                     contactList.map((item, key) => (
-                        <div className='newChat-item' key={key}>
+                        <div onClick={() => addNewChat(item)} className='newChat-item' key={key}>
                             <img className='newChat-item-avatar' alt="" src={item.avatar}/>
                             <div className='newChat-item-name'>{item.name}</div>
                         </div>

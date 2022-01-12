@@ -11,8 +11,9 @@ import MicIcon from '@mui/icons-material/Mic';
 import SendIcon from '@mui/icons-material/Send';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 import CloseIcon from '@mui/icons-material/Close';
+import { onChatContent, sendMessage } from "../Api";
 
-const ChatWindow = ({user}) => {
+const ChatWindow = ({user, data}) => {
 
     const body = useRef();
 
@@ -25,30 +26,30 @@ const ChatWindow = ({user}) => {
     const [emojiOpen, setEmojiOpen] = useState(false);
     const [text, setText] = useState('');
     const [listening, setListening] = useState(false);
-    const [messageList, setMessageList] = useState([
-        {author:123, date:'19:00', body: "testeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"},
-        {author:123, date:'19:01', body: "estranho"},
-        {author:1234, date:'19:01', body: 'ta funcionandooooooo :3'},
-        { author: 123, date: '19:00', body: "testeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" },
-        { author: 123, date: '19:01', body: "estranho" },
-        { author: 1234, date: '19:01', body: 'ta funcionandooooooo :3' },
-        { author: 123, date: '19:00', body: "testeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" },
-        { author: 123, date: '19:01', body: "estranho" },
-        { author: 1234, date: '19:01', body: 'ta funcionandooooooo :3' },
-        { author: 123, date: '19:00', body: "testeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" },
-        { author: 123, date: '19:01', body: "estranho" },
-        { author: 1234, date: '19:01', body: 'ta funcionandooooooo :3' }, { author: 123, date: '19:00', body: "testeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" },
-        { author: 123, date: '19:01', body: "estranho" },
-        { author: 1234, date: '19:01', body: 'ta funcionandooooooo :3' }
-    ]);
+    const [messageList, setMessageList] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [bottom, setBottom] = useState(true);
+    const [messageSent, setMessageSent] = useState(true);
 
+    useEffect(()=>{
+        const getMessages = async (data) => {
+            if (data) {
+                setMessageList(await onChatContent(data.chatId, setUsers));
+            }
+        };
+
+        getMessages(data);
+    }, [data, messageSent]);
+    
 
     useEffect(() => {
-        if(body.current.scrollHeight > body.current.offsetHeight){
-            body.current.scrollTop = body.current.scrollHeight - body.current.offsetHeight
+        if(bottom){
+            if(body.current.scrollHeight > body.current.offsetHeight){
+                body.current.scrollTop = body.current.scrollHeight - body.current.offsetHeight
+            }
         }
-    },[messageList]);
-
+    },[users]);
+    
     const handleEmojiClick = (e, emojiObject) => {
         setText(text + emojiObject.emoji)
     }
@@ -61,8 +62,24 @@ const ChatWindow = ({user}) => {
         setEmojiOpen(false);
     }
 
-    const handleSendClick = () => {
+    const handleInputKeyUp = (e) => {
+        if(e.keyCode == 13){
+            handleSendClick();
+        }
+    }
 
+    const handleSendClick = () => {
+        if(text !== ''){
+            sendMessage(data, user.id, 'text', text, users);
+            setText('');
+            setEmojiOpen(false);
+            setBottom(true);
+            setMessageSent(!messageSent);
+        }
+    }
+
+    const handleSetBottom = () => {
+        setBottom(false);
     }
 
     const handleMicClick = () => {
@@ -85,11 +102,12 @@ const ChatWindow = ({user}) => {
     }
 
     return(
-        <div className="chatWindow">
+        <div className="chatWindow"
+        >
             <div className="chatWindow-header">
                 <div className="chatWindow-header-info">
-                    <img className="chatWindow-header-avatar" src="https://fiverr-res.cloudinary.com/images/t_main1,q_auto,f_auto,q_auto,f_auto/gigs/104113705/original/6076831db34315e45bd2a31a9d79bb7b91d48e04/design-flat-style-minimalist-avatar-of-you.jpg" alt=""/>
-                    <div className="chatWindow-header-name">Toni</div>
+                    <img className="chatWindow-header-avatar" src={data.image} alt=""/>
+                    <div className="chatWindow-header-name">{data.title}</div>
                 </div>
                 <div className="chatWindow-header-icons">
                     <div className="chatWindow-header-icon">
@@ -103,7 +121,8 @@ const ChatWindow = ({user}) => {
                     </div>
                 </div>
             </div>
-            <div ref={body} className="chatWindow-body">
+            <div ref={body} className="chatWindow-body"
+            onScroll={handleSetBottom}>
                 {
                     messageList.map((item, key) => (
                         <MessageItem
@@ -151,6 +170,7 @@ const ChatWindow = ({user}) => {
                         placeholder="Type a message"
                         value={text}
                         onChange={e => setText(e.target.value)}
+                        onKeyUp={handleInputKeyUp}
                     />
                 </div>
                 <div className="chatWindow-footer-right">

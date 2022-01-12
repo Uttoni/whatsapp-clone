@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import DonutLargeIcon from '@mui/icons-material/DonutLarge';
 import ChatIcon from '@mui/icons-material/Chat';
@@ -8,27 +8,48 @@ import ChatListItem from './components/ChatListItem.js';
 import ChatIntro from './components/ChatIntro.js';
 import ChatWindow from './components/ChatWindow.js';
 import NewChat from './components/NewChat';
+import Login from './components/Login';
+import { addUser, onChatList } from './Api.js';
 
 const App = () => {
 
-  const [chatList, setChatList] = useState([
-    {chatId: 1, name: 'Nome da Pessoa 1', avatar: 'https://fiverr-res.cloudinary.com/images/t_main1,q_auto,f_auto,q_auto,f_auto/gigs/104113705/original/6076831db34315e45bd2a31a9d79bb7b91d48e04/design-flat-style-minimalist-avatar-of-you.jpg'},
-    {chatId: 2, name: 'Nome da Pessoa 2', avatar: 'https://fiverr-res.cloudinary.com/images/t_main1,q_auto,f_auto,q_auto,f_auto/gigs/104113705/original/6076831db34315e45bd2a31a9d79bb7b91d48e04/design-flat-style-minimalist-avatar-of-you.jpg'},
-    {chatId: 3, name: 'Nome da Pessoa 3', avatar: 'https://fiverr-res.cloudinary.com/images/t_main1,q_auto,f_auto,q_auto,f_auto/gigs/104113705/original/6076831db34315e45bd2a31a9d79bb7b91d48e04/design-flat-style-minimalist-avatar-of-you.jpg'},
-  ]);
-
-  const [user, setUser] = useState({
-    id: 1234,
-    name: "Uttoni",
-    avatar: "https://fiverr-res.cloudinary.com/images/t_main1,q_auto,f_auto,q_auto,f_auto/gigs/104113705/original/6076831db34315e45bd2a31a9d79bb7b91d48e04/design-flat-style-minimalist-avatar-of-you.jpg"
-  }); 
-
+  const [chatList, setChatList] = useState([]);
+  const [user, setUser] = useState(null);
   const [activeChat, setActiveChat] = useState({});
   const [showNewChat, setShowNewChat] = useState(false);
+
+
+  useEffect(() => {
+    const getList = async (user) => {
+      if (user !== null) {
+        setChatList(await onChatList(user.id));
+      }
+    };
+
+    getList(user);
+
+  }, [user]);
 
   const handleNewChat = () => {
     setShowNewChat(true);
   }
+
+  const handleLoginData = async (u) =>{
+    let newUser ={
+      id: u.uid,
+      name: u.displayName,
+      avatar: u.photoURL
+    }
+    //save in database
+    await addUser(newUser);
+    //setting user
+    setUser(newUser);
+  }
+
+  if(user===null){
+    return(<Login onReceive={handleLoginData}/>);
+  }
+  
   return(
     <div className='app-window'>
       <div className='sidebar'>
@@ -79,7 +100,7 @@ const App = () => {
       </div>
       <div className='content-area'>
         { activeChat.chatId !== undefined &&
-          <ChatWindow user={user}/>
+          <ChatWindow user={user} data={activeChat}/>
         }
 
         {activeChat.chatId === undefined &&
